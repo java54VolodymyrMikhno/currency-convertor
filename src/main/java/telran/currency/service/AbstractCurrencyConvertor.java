@@ -4,11 +4,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AbstractCurrencyConvertor implements CurrencyConvertor {
-protected Map<String, Double> rates; //key - currency ISO code;
-//value - amount of code's units in 1 EUR
+protected Map<String, Double> rates; 
 	@Override
 	public List<String> strongestCurrencies(int amount) {
-		// TODO Auto-generated method stub
 		return rates.entrySet().stream()
 				.sorted(Map.Entry.<String,Double>comparingByValue().reversed())
 				.limit(amount)
