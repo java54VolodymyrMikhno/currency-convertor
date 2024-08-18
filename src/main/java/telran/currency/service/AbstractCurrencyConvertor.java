@@ -1,41 +1,44 @@
 package telran.currency.service;
 
 import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
-public class AbstractCurrencyConvertor implements CurrencyConvertor {
-	protected Map<String, Double> rates;
+public class AbstractCurrencyConvertor implements CurrencyConvertor{
+    protected Map<String, Double> rates;
+    @Override
+    public List<String> strongestCurrencies(int amount) {
+        return getCurrencies(amount, Comparator.naturalOrder());
+    }
 
-	@Override
-	public List<String> strongestCurrencies(int amount) {
-		return getCurrencies(amount, Map.Entry.comparingByValue());
-	}
-
-	private List<String> getCurrencies(int amount, Comparator<Map.Entry<String, Double>> comparator) {
-        return rates.entrySet().stream()
-                .sorted(comparator)
+    private List<String> getCurrencies(int amount, Comparator<Double> comparator) {
+        return  rates.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(comparator))
                 .limit(amount)
                 .map(Map.Entry::getKey)
                 .toList();
     }
 
-	@Override
-	public List<String> weakestCurrencies(int amount) {
-		return getCurrencies(amount, Map.Entry.<String, Double>comparingByValue().reversed());
-	}
+    @Override
+    public List<String> weakestCurrencies(int amount) {
+        return getCurrencies(amount, Comparator.reverseOrder());
+    }
 
-	@Override
-	public double convert(String codeFrom, String codeTo, int amount) {
-		double rateFrom = rates.getOrDefault(codeFrom, 1.0);
-		double rateTo = rates.getOrDefault(codeTo, 1.0);
-		return amount * (rateTo / rateFrom);
-	}
+    @Override
+    public double convert(String codeFrom, String codeTo, int amount) {
+        double fromRate = getRates(codeFrom);
+        double toRate = getRates(codeTo);
+        return amount*(toRate/fromRate);
+    }
 
-	@Override
-	public HashSet<String> getAllCodes() {
+    private Double getRates(String code) {
+        Double rate = rates.get(code);
+        if(rate == null){
+            throw new RuntimeException("Unknown currency code "+code);
+        }
+        return  rate;
+    }
 
-		return new HashSet<>(rates.keySet());
-	}
-
+    @Override
+    public HashSet<String> getAllCodes() {
+        return new HashSet<>(rates.keySet());
+    }
 }
