@@ -8,15 +8,16 @@ import java.util.*;
 public class CurrencyItems {
     private static CurrencyConvertor currencyConvector;
 
-    public static List<Item> getItems(CurrencyConvertor currencyConvector) {
+    public static Item[] getItems(CurrencyConvertor currencyConvector) {
         CurrencyItems.currencyConvector = currencyConvector;
         Item[] items = {
                 Item.of("Convert currency", CurrencyItems::convert),
                 Item.of("View strongest currencies", io -> showCurrencies(io, true)),
                 Item.of("View weakest currencies", io -> showCurrencies(io, false)),
                 Item.of("View all available currency codes", CurrencyItems::allCodes),
+                Item.ofExit()
         };
-        return new ArrayList<>(List.of(items));
+        return items;
     }
 
     private static void showCurrencies(InputOutput io, boolean isStrongest) {
